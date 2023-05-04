@@ -3,11 +3,13 @@ from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage
 from starlette.exceptions import HTTPException
-import uvicorn
+from mangum import Mangum
 import gpt
 import os
 
 app = FastAPI(title="ChatGPT君", description="LineからChatGPTを利用します。")
+lambda_handler = Mangum(app)
+
 line_bot_api = LineBotApi(os.environ["LINE_CHANNEL_ACCESS_TOKEN"])
 handler = WebhookHandler(os.environ["LINE_CHANNEL_SECRET"])
 
@@ -42,7 +44,3 @@ async def callback(request: Request, x_line_signature=Header(None)):
 def handle_message(event):
     msg = gpt.inquire_gpt(text=event.message.text)
     line_bot_api.reply_message(event.reply_token, TextMessage(text=msg))
-
-
-if __name__ == "__main__":
-    uvicorn.run("main:app", reload=True, port=8000)

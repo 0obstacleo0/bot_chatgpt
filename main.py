@@ -6,6 +6,8 @@ from starlette.exceptions import HTTPException
 from mangum import Mangum
 import gpt
 import os
+import uvicorn
+
 
 app = FastAPI(title="ChatGPT君", description="LineからChatGPTを利用します。")
 lambda_handler = Mangum(app)
@@ -44,3 +46,8 @@ async def callback(request: Request, x_line_signature=Header(None)):
 def handle_message(event):
     msg = gpt.inquire_gpt(text=event.message.text)
     line_bot_api.reply_message(event.reply_token, TextMessage(text=msg))
+
+
+# ローカル開発用
+if __name__ == "__main__":
+    uvicorn.run("main:app", reload=True, port=8000)

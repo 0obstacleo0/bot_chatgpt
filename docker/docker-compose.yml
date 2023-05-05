@@ -1,0 +1,8 @@
+version: '3'
+services:
+  aws-lambda-layers:
+    build: .
+    volumes:
+      - './layers:/home/layers'
+    working_dir: '/home/'
+    command: sh -c "python3 -m pip install -r layers/requirements.txt -t python/ && zip -r layers/file.zip python/"
